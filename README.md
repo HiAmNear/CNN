@@ -47,3 +47,82 @@ In the forward method, after receiving the input x and applying block1_output, b
 ## Result
 The result can be calculated in 15 minutes, using LR = 0.0001, 10 epoch, and GPU. The accuracy was 0.8032.
 
+# 問題2のレポート  Problem 2 Report
+
+Using LSTM+Dropout model to achieve higher accuracy on the IMDb dataset with expected accuracy over 75%
+ 
+## LSTM
+
+<img src="https://i2.wp.com/nttuan8.com/wp-content/uploads/2019/06/lstm.png?resize=559%2C338&ssl=1" width="500" height="200">
+
+## Dropout
+
+<img src="https://files.ai-pool.com/a/59df0e2cc98add51893f784916195478.png" width="500" height="200">
+
+- Setting up LSTM with parameters as the following:
+ + input_size = 300
+ + hidden_size = 516
+ + num_layers = 2 :stacking two LSTMs together to form a stacked LSTM, with the second LSTM taking in outputs of the first LSTM and computing the final results.
+ - dropout = 0.5 introduces a Dropout layer on the outputs of each LSTM layer except the last layer.
+Implement Dropout to randomly zeroes some of the elements of the input tensor with probability p using samples from a Bernoulli distribution duting training. Each channel will be zeroed out independently on every forward call:
+ + p = 0.5 probability of an element to be zeroed.
+- Furthermore, the outputs are scaled by a factor of 1/1-p during training. This means that during evaluation the module simply computes an identity function.
+- Dropout is applied to the output of LSTM
+- Forward propagation is calculated with forward. When emb (x) is executed, the input x (all token columns in the mini-batch) is embedded together. Therefore, e is a tensor with text length x batch size x 300. After that, initialize the intermediate state of the LSTM. Output contains the output state of all time steps. In most cases, the final state is required for classification.
+- Use "hn” to continue the sequence for backpropagation by later passing it as an argument to the LSTM.. hn[-2 ,:,:] is the end of the forward RNN while hn[-1,:,:] is the end of the backward RNN. Finally, calculate self.li(hn) and use this as the output.
+## Result
+### RNN model:
+epoch 0 : loss 279.06442603468895
+
+epoch 1 : loss 243.09687647223473
+
+epoch 2 : loss 239.68640065193176
+
+epoch 3 : loss 238.34244325757027
+
+epoch 4 : loss 237.49841277301311
+
+epoch 5 : loss 236.89533491432667
+
+epoch 6 : loss 236.408755376935
+
+epoch 7 : loss 235.98467338085175
+
+epoch 8 : loss 235.59556458890438
+
+epoch 9 : loss 235.2350489348173
+
+correct: 16873
+
+total: 25000
+
+accuracy: 0.67492
+
+### LSTM + Dropout model:
+epoch 0 : loss 208.35595202352852
+
+epoch 1 : loss 173.15486887469888
+
+epoch 2 : loss 102.85342382453382
+
+epoch 3 : loss 64.40572276711464
+
+epoch 4 : loss 43.27356273634359
+
+epoch 5 : loss 26.790876372368075
+
+epoch 6 : loss 16.730014154920354
+
+epoch 7 : loss 12.755365838645957
+
+epoch 8 : loss 6.49576061766129
+
+epoch 9 : loss 4.625697691124515 correct: 21039
+
+correct: 22185
+
+total: 25000
+
+accuracy: 0.8874
+
+### LSTM+Dropout model can achieve around 88% accuracy
