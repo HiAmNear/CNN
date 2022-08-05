@@ -126,3 +126,46 @@ total: 25000
 accuracy: 0.8874
 
 ### LSTM+Dropout model can achieve around 88% accuracy
+
+# 問題3のレポート  Problem 3 Report
+## Dataset Explanation:
+IWSLT'15 English-Vietnamese Dataset
+IWSLT stands for International Workshop on Spoken Language Translation
+IWSLT15 (en-vi) consists of 133,317 sentence pairs of training data, 1,553 sentence pairs of development data, and 1,268 sentence pairs of test data.
+## Requirements:
+Input: English Text
+Output: Translated Vietnamese Text
+ 
+## Preprocessing:
+Data was preprocessed as the teacher presented in the lecture, improvements are mostly made to the model and hyperparameter tuning. 
+The conversion of the first token column is unnecessary because the one that has been applied to the data of distributed IWSLT15.
+
+## Installation:
+The LSTM significantly improves the encoder・decoder model based on RNN. In order to increase the BLEU rating values, we decided to incorporate the Bidirectional LSTM model to the already provided Model from Lab work 6. 
+ 
+ 
+## The encoder uses the following units:
+• encemb: Encoder convolution layer (256 dimensions).
+Sets the number of dimensions of the word embedder to 256 dimensions. Also padding_idx allows us to specify an ID for the padding, which is vocabidx_x['<pad>'] so that a 0 vector is returned for it. 
+• encrnn: Encoder LSTM calculation unit (256,516,2, dropout = 0.5, bidirectional=True)
+ 
+## The decoder uses the following units:
+• decemb: convolution layer of the decoder (516 dimensions)
+• decrnn: LSTM calculation unit of the decoder (256,516,2,dropout = 0.5, bidirectional=True) 
+ 
+* decout: Output of the decoder (516*2 the number of vocabulary of the target language)
+ 
+## Forward function: 
+LSTM bidirectional based encoder decoder calculation of forward propagation is used for the training process. x is passed in pairs with a mini-batch of input statements and a mini-batch of output statements. x[0] gives a mini-batch of input statements and x[1] gives a mini-batch of output statements. Which is set to x, y, respectively.
+ 
+Then x is a mini-batch with the sentence length * batch size which represents the input sentence set, and y is a mini-batch with sentence length * batch size which represents the output sentence set.
+ 
+The outputs h and c of the encoder are used as intermediate states h and c of the decoder. It saves the hidden state and the cell state, which are initially filled with zeros.
+ 
+The squeeze function is used to manipulate tensors by removing all dimensions of an input of size 1.
+The unsqueeze function is used to generate a new tensor as output by adding a new dimension of size 1 to the desired position. Again, the obtained output data and elements remain the same in the tensor.
+
+## Execution Result:
+If the learning rate was LR=0.001, epoch = 10 and the maximum sentence length at inference was 30, it could be calculated in about 70 minutes using the GPU. The BLEU score resulted from the test was 0.0923 (9.23%). However, after training for 20 epochs, The result improved to 0.0937 which was not significant.
+## Conclusion:
+The training didn’t result greatly in using the Bidirectional LSTM and Dropout method. A more powerful model such as Seq2Seq and Transformer would’ve produced a better BLEU score.
